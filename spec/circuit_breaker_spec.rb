@@ -46,7 +46,7 @@ RSpec.describe CircuitBreaker do
     expect{ breaker.execute { mock_service.call }}.to raise_error(CircuitBreakerError)
   end
 
-  it 'goes to :half_open after timeout and to :closed :closed if success' do
+  it 'goes to :half_open after timeout and to :closed if success' do
     allow(mock_service).to receive(:call).and_raise(StandardError, "Service is Down!")
 
     2.times {  
