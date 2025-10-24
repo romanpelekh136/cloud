@@ -26,7 +26,7 @@ class CircuitBreaker
   private
 
   def reset
-    @failure_count = 0
+    change_state(:closed)
     @failure_count = 0
     @last_failure_time = nil
   end
@@ -65,10 +65,8 @@ class CircuitBreaker
   def handle_open_state
     if Time.now - @last_failure_time >= @recovery_timeout
       change_state(:half_open)
-      # Якщо так, ОДРАЗУ пробуємо
       handle_half_open_state { yield }
     else
-      # Якщо ні, "падаємо"
       raise CircuitBreakerError, "Circuit is OPEN. Fast-failing."
     end
   end
@@ -76,10 +74,8 @@ class CircuitBreaker
   def handle_half_open_state
     begin
       result = yield
-      # Успіх? Чудово, закриваємо
       reset; result
     rescue StandardError => e
-      # Помилка? Погано, знову відкриваємо
       trip; raise e
     end
   end
