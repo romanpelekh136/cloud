@@ -18,6 +18,6 @@ RSpec.describe Retrier do
     expect(mock_service).to have_received(:call).once
   end
 
-
+  
 
 end
