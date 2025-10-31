@@ -27,5 +27,4 @@ class Retrier
       
     end
   end
-
 end

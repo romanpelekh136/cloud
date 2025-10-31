@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CircuitBreakerError < StandardError; end
 
 class CircuitBreaker
@@ -12,14 +14,14 @@ class CircuitBreaker
     @last_failure_time = nil
   end
 
-  def execute
+  def execute(&block)
     case @state
     when :closed
-      handle_closed_state { yield }
+      handle_closed_state(&block)
     when :open
-      handle_open_state { yield }
+      handle_open_state(&block)
     when :half_open
-      handle_half_open_state { yield }
+      handle_half_open_state(&block)
     end
   end
 
@@ -33,9 +35,9 @@ class CircuitBreaker
 
   def record_failure
     @failure_count += 1
-    if @failure_count >= @failure_threshold
-      trip
-    end
+    return unless @failure_count >= @failure_threshold
+
+    trip
   end
 
   def trip
@@ -45,38 +47,36 @@ class CircuitBreaker
   end
 
   def change_state(new_state)
-    unless @state == new_state
-      puts "[CircuitBreaker] Стан: #{@state} -> #{new_state}"
-      @state = new_state
-    end
+    return if @state == new_state
+
+    puts "[CircuitBreaker] Стан: #{@state} -> #{new_state}"
+    @state = new_state
   end
-
-
 
   def handle_closed_state
-    begin
-      result = yield
-      reset; result
-    rescue StandardError => e
-      record_failure; raise e
-    end
+    result = yield
+    reset
+    result
+  rescue StandardError => e
+    record_failure
+    raise e
   end
 
-  def handle_open_state
-    if Time.now - @last_failure_time >= @recovery_timeout
-      change_state(:half_open)
-      handle_half_open_state { yield }
-    else
-      raise CircuitBreakerError, "Circuit is OPEN. Fast-failing."
+  def handle_open_state(&block)
+    unless Time.now - @last_failure_time >= @recovery_timeout
+      raise CircuitBreakerError, 'Circuit is OPEN. Fast-failing.'
     end
+
+    change_state(:half_open)
+    handle_half_open_state(&block)
   end
 
   def handle_half_open_state
-    begin
-      result = yield
-      reset; result
-    rescue StandardError => e
-      trip; raise e
-    end
+    result = yield
+    reset
+    result
+  rescue StandardError => e
+    trip
+    raise e
   end
 end
