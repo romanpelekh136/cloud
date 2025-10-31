@@ -13,7 +13,7 @@ class Retrier
       begin
         return yield
       rescue StandardError => e 
-        if current_attempt => max_attempts
+        if current_attempt >= max_attempts
 
           puts "[Retry] All #{@max_attempts} tries failed."
           raise e
