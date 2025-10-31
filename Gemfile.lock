@@ -52,6 +52,9 @@ PLATFORMS
 
 DEPENDENCIES
   rspec
+  rspec-core
+  rspec-expectations
+  rspec-mocks
   rubocop
 
 BUNDLED WITH
