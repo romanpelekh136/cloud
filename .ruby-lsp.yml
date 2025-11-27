@@ -1,0 +1,4 @@
+testLibrary: rspec
+testCommand: "bundle exec rspec"
+enabledFeatures:
+  codeLens: true
