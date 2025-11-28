@@ -17,7 +17,7 @@ RSpec.describe Throttle do
 
     start_time = Time.now
 
-    allow(Time).to receive(:now).and_return(start_time, start_time, start_time + 0.1, start_time + 0.1)
+    allow(Time).to receive(:now).and_return(start_time, start_time + 0.1)
 
     throttle.execute { mock_service.action1 }
     throttle.execute { mock_service.action2 }
@@ -27,7 +27,7 @@ RSpec.describe Throttle do
     expect(mock_service).to receive(:action1).twice
     start_time = Time.now
 
-    allow(Time).to receive(:now).and_return(start_time, start_time, start_time + 1, start_time + 1)
+    allow(Time).to receive(:now).and_return(start_time, start_time + 1)
     throttle.execute { mock_service.action1 }
     throttle.execute { mock_service.action1 }
   end

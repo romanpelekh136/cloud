@@ -1,13 +1,15 @@
 class Throttle # rubocop:disable Style/FrozenStringLiteralComment
   def initialize(wait_time)
     @wait_time = wait_time
-    @closing_time = Time.now - @wait_time
+    @closing_time = Time.at(0)
   end
 
   def execute
-    return if Time.now - @closing_time < @wait_time
+    @current_time = Time.now
+    return if @current_time - @closing_time < @wait_time
+
+    @closing_time = @current_time
 
     yield
-    @closing_time = Time.now
   end
 end
