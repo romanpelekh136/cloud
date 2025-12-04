@@ -1,4 +1,4 @@
-class Throttle # rubocop:disable Style/FrozenStringLiteralComment
+class Throttle # rubocop:disable Style/FrozenStringLiteralComment,Style/Documentation
   def initialize(wait_time)
     @wait_time = wait_time
     @closing_time = Time.at(0)

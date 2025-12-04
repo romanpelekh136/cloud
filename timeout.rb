@@ -1,4 +1,4 @@
-class TimeOutError < StandardError
+class TimeOutError < StandardError; end
 
 class Timeout
   def initialize(wait_time)

@@ -1,8 +1,20 @@
+require 'rspec' # rubocop:disable Style/FrozenStringLiteralComment
+require_relative '../timeout'
+
 RSpec.describe Timeout do
-  let(:Timeout) { Timeout.new(2) }
-  let(:mock_service) { double('Service') }
+  let(:timeout) { Timeout.new(0.5) }
 
-  # 1. Service runs under wait_time
+  it 'the service executes under wait_time' do
+    result = timeout.execute { 'Success' }
+    expect(result).to eq('Success')
+  end
 
-  # 2. Service does not run under wait_time
+  it 'the service does not executes under wait_time' do
+    expect do
+      timeout.execute do
+        sleep 1
+        'Success'
+      end
+    end.to raise_error(TimeOutError)
+  end
 end
